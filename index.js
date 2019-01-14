@@ -1,7 +1,9 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+var messages = require('./routes/messages.js');
+var videos = require('./routes/videos.js');
 
 app.use(bodyParser.json())
 
@@ -21,8 +23,15 @@ app.get('/', function (req, res) {
 app.post('/message', function (req, res) {
   var message = req.body.message;
   var username = req.body.username;
-  console.log(message);
   io.emit("customEmit", { username: username, message: message });
+});
+
+app.get("/messages", function (req, res) {
+  return res.status(200).send({ messages: messages.getComments() });
+});
+
+app.get("/previousVideos", function (req, res) {
+  return res.status(200).send({videos: videos.getVideos()});
 });
 
 http.listen(3000, function () {
